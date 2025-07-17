@@ -1,0 +1,140 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+  <title>Zomato</title>
+  <style>
+    .bg-danger {
+      background: linear-gradient(45deg, black, red);
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-dark bg-danger p-4">
+    <a href="#" class="navbar-brand">Zomato</a>
+  </nav>
+
+  <section class="text-center mt-3">
+    <h2>Non-veg Items</h2>
+  </section>
+
+  <div class="row" id="displayEle" class="container p-4"></div>
+
+  <!-- Generate Bill Button -->
+  <div class="text-center my-4">
+    <button class="btn btn-success" onclick="generateBill()">Generate Bill</button>
+  </div>
+
+  <!-- Bill Output -->
+  <div id="billOutput" class="container my-4"></div>
+
+  <script>
+    let items = [
+      { id: 101, name: "Chicken Biryani", img_url: "https://www.cubesnjuliennes.com/wp-content/uploads/2020/07/Chicken-Biryani-Recipe.jpg", price: 250, qty: 0 },
+      { id: 102, name: "Chicken Tandoori", img_url: "https://www.seema.com/wp-content/uploads/2021/08/shutterstock_1199926645-1024x683.jpg", price: 150, qty: 0 },
+      { id: 103, name: "Fish Fry", img_url: "https://wallpapercave.com/wp/wp7399294.jpg", price: 145, qty: 0 },
+      { id: 104, name: "Mutton Biryani", img_url: "https://www.licious.in/blog/wp-content/uploads/2020/12/Mutton-Biryani.jpg", price: 350, qty: 0 },
+      { id: 105, name: "Chicken Kebab", img_url: "https://www.licious.in/blog/wp-content/uploads/2020/12/Chicken-Seekh-Kebab.jpg", price: 229, qty: 0 },
+      { id: 106, name: "Butter Chicken", img_url: "https://th.bing.com/th/id/OIP.t8fjuBtoCx7eoPznO9wgzgHaHa?w=202&h=202", price: 349, qty: 0 },
+      { id: 107, name: "Prawn Curry", img_url: "https://tse1.mm.bing.net/th/id/OIP.-o5b_tqsCC4M9MriIXySvQHaE8?w=1000&h=667", price: 399, qty: 0 },
+      { id: 108, name: "Egg Curry", img_url: "https://tse2.mm.bing.net/th/id/OIP.TAXYykEOvmRky9fe5BwAYwHaLH", price: 179, qty: 0 }
+    ];
+
+    let displayData = document.getElementById('displayEle');
+
+    function display() {
+      let res = ``;
+      items.map(item => {
+        res += `
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
+          <div class="card">
+            <div class="card-header bg-danger">
+              <img class="img-fluid" style="height:200px; width:100%" src="${item.img_url}" alt="${item.name}">
+            </div>
+            <div class="card-body text-center">
+              <h5 class="text-danger">${item.name}</h5>
+              <h6><span><i class="bi bi-currency-rupee"></i></span> ${item.price}/-</h6>
+              <div class="d-flex justify-content-center align-items-center gap-2">
+                <i class="bi bi-dash-circle-fill text-danger fs-4" style="cursor:pointer" onclick="decqty(${item.id})"></i>
+                <span class="fs-5">${item.qty}</span>
+                <i class="bi bi-plus-circle-fill text-success fs-4" style="cursor:pointer" onclick="incqty(${item.id})"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+        `;
+      });
+      displayData.innerHTML = res;
+    }
+
+    function incqty(id) {
+      items.forEach(item => {
+        if (item.id === id) {
+          item.qty += 1;
+        }
+      });
+      display();
+    }
+
+    function decqty(id) {
+      items.forEach(item => {
+        if (item.id === id && item.qty > 0) {
+          item.qty -= 1;
+        }
+      });
+      display();
+    }
+
+    function generateBill() {
+    ;  let selected = items.filter(item => item.qty > 0)
+      if (selected.length === 0) {
+        document.getElementById("billOutput").innerHTML = `<div class="alert alert-warning text-center">No items selected!</div>`;
+        return;
+      }
+
+      let html = `
+        <h3 class="text-center text-primary">Your Bill Summary</h3>
+        <table class="table table-bordered">
+          <thead class="table-danger">
+            <tr>
+              <th>Item</th>
+              <th>Qty</th>
+              <th>Price</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody>`;
+
+      let total = 0;
+      selected.forEach(item => {
+        let itemTotal = item.price * item.qty;
+        total += itemTotal;
+        html += `
+          <tr>
+            <td>${item.name}</td>
+            <td>${item.qty}</td>
+            <td>₹${item.price}</td>
+            <td>₹${itemTotal}</td>
+          </tr>`;
+      });
+
+      html += `
+          </tbody>
+          <tfoot class="table-secondary">
+            <tr>
+              <th colspan="3" class="text-end">Grand Total</th>
+              <th>₹${total}</th>
+            </tr>
+          </tfoot>
+        </table>`;
+
+      document.getElementById("billOutput").innerHTML = html;
+    }
+
+    // initial call
+    display();
+  </script>
+</body>
+</html>
